@@ -100,4 +100,4 @@ class NewsFetcher:
             }
             news_list.append(news_item)
         
-        return news_list
+        self.fetched_news_general = news_list
