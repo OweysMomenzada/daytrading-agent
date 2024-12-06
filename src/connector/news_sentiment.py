@@ -15,6 +15,7 @@ class NewsSentiment:
         self.api_key = os.getenv('ALPHA_VANTAGE_API_KEY')
         if not self.api_key:
             raise ValueError("API key not found in environment variables")
+        self.url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={self.api_key}'
     
     def _process_sentiment_data(self, data, ticker):
         """
@@ -77,8 +78,8 @@ class NewsSentiment:
         Raises:
         Exception: If the API request fails.
         """
-        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={ticker}&apikey={self.api_key}'
-        response = requests.get(url)
+        
+        response = requests.get(self.url)
         
         if response.status_code == 200:
             data = response.json()
