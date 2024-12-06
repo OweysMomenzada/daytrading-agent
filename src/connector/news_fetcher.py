@@ -1,4 +1,5 @@
 import yfinance as yf
+from yahoo_fin import news
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -72,3 +73,31 @@ class NewsFetcher:
             news_list.append(news_item)
         
         self.fetched_news = news_list
+
+    def fetch_latest_news(self, ticker_symbol, num_articles=5):
+        """
+        Fetches the latest news for the given ticker symbol from Yahoo Finance.
+
+        Args:
+            ticker_symbol (str): The stock ticker symbol.
+            num_articles (int): The number of articles to fetch. Default is 5.
+
+        Returns:
+            list: A list of dictionaries containing the title, link, publisher, published time, and content of each news article.
+        """
+        news_data = news.get_yf_rss(ticker_symbol)
+        news_list = []
+
+        for article in news_data[:num_articles]:
+            publish_time = datetime.strptime(article['published'], '%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
+            content = self.get_article_content(article['link'])
+            news_item = {
+                'title': article['title'],
+                'link': article['link'],
+                'publisher': article['publisher'],
+                'published': publish_time,
+                'content': content
+            }
+            news_list.append(news_item)
+        
+        return news_list
