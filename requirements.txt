@@ -1,0 +1,6 @@
+requests
+beautifulsoup4
+yfinance
+selenium
+webdriver-manager
+yahoo_fin
