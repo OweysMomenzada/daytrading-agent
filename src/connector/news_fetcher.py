@@ -32,6 +32,7 @@ class NewsFetcher:
         Returns:
             str: The content of the article.
         """
+        print(f"Fetching article content from {url}")
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--no-sandbox')
@@ -40,7 +41,7 @@ class NewsFetcher:
         driver.get(url)
         
         try:
-            WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+            WebDriverWait(driver, 0.5).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
             soup = BeautifulSoup(driver.page_source, 'html.parser')
             paragraphs = soup.find_all('p')
             content = ' '.join([p.get_text() for p in paragraphs])
@@ -51,7 +52,7 @@ class NewsFetcher:
         
         return content
 
-    def fetch_news_about_stock(self, ticker_symbol):
+    def fetch_news_and_update(self, ticker_symbol, list_of_news_to_update):
         """
         Fetches the latest news articles for the given ticker symbol.
         If the article content is not available, it will be set to "Failed to retrieve the article content".
@@ -59,6 +60,7 @@ class NewsFetcher:
 
         Args:
             ticker_symbol (str): The stock ticker symbol.
+            list_of_news_to_update (list): The list of news to update.
 
         Returns:
             list: A list of dictionaries containing the title, link, publisher, published time, and content of each article.
@@ -66,7 +68,8 @@ class NewsFetcher:
         ticker = yf.Ticker(ticker_symbol)
         news = ticker.news[:self.num_articles]
         
-        existing_links = {item['link'] for item in self.fetched_news_about_stock}
+        existing_links = {item['link'] for item in list_of_news_to_update}
+        updated = False
         
         for article in news:
             if article['link'] not in existing_links:
@@ -79,11 +82,29 @@ class NewsFetcher:
                     'published': publish_time,
                     'content': content
                 }
-                self.fetched_news_about_stock.insert(0, news_item)
+                list_of_news_to_update.insert(0, news_item)
+                updated = True
         
-        self.fetched_news_about_stock = self.fetched_news_about_stock[:self.num_articles]
+        list_of_news_to_update = list_of_news_to_update[:self.num_articles]
         
-    def fetch_latest_news(self, ticker_symbol):
+        return list_of_news_to_update if updated else False
+
+    def fetch_latest_news(self):
+        """
+        Fetches the latest news for the given ticker symbol from Yahoo Finance for S&P 500.
+
+        Returns:
+            list: A list of dictionaries containing the title, link, publisher, published time, and content of each news article.
+        """
+        result = self.fetch_news_and_update(ticker_symbol="^GSPC", 
+                                            list_of_news_to_update=self.fetched_news_general)
+        if not result:
+            return False
+        else:
+            self.fetched_news_general = result
+            return result
+
+    def fetch_news_about_stock(self, ticker_symbol):
         """
         Fetches the latest news for the given ticker symbol from Yahoo Finance.
 
@@ -93,29 +114,18 @@ class NewsFetcher:
         Returns:
             list: A list of dictionaries containing the title, link, publisher, published time, and content of each news article.
         """
-        news_data = news.get_yf_rss(ticker_symbol)
-        existing_links = {item['link'] for item in self.fetched_news_about_stock}
-
-        for article in news_data[:self.num_articles]:
-            if article['link'] not in existing_links:
-                publish_time = datetime.strptime(article['published'], '%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
-                content = self.get_article_content(article['link'])
-                news_item = {
-                    'title': article['title'],
-                    'link': article['link'],
-                    'publisher': "Yahoo Finance",
-                    'published': publish_time,
-                    'content': content
-                }
-                self.fetched_news_general.insert(0, news_item)
-        
-        self.fetched_news_general = self.fetched_news_general[:self.num_articles]
+        result = self.fetch_news_and_update(ticker_symbol=ticker_symbol, 
+                                            list_of_news_to_update=self.fetched_news_about_stock)
+        if not result:
+            return False
+        else:
+            return result
 
 if __name__ == "__main__":
-    news_fetcher = NewsFetcher()
+    news_fetcher = NewsFetcher(num_articles=2)
     ticker_symbol = "MSFT"
-    news_fetcher.fetch_news_about_stock(ticker_symbol)
-    news_fetcher.fetch_latest_news(ticker_symbol)
+    news_stock = news_fetcher.fetch_news_about_stock(ticker_symbol)
+    news_general = news_fetcher.fetch_latest_news()
 
     print("News about the stock:")
     for news_item in news_fetcher.fetched_news_about_stock:
@@ -124,3 +134,10 @@ if __name__ == "__main__":
     print("\nLatest news:")
     for news_item in news_fetcher.fetched_news_general:
         print(news_item)
+
+    print("Trying to immediately fetch the news again:")
+    news_stock = news_fetcher.fetch_news_about_stock(ticker_symbol)
+    news_general = news_fetcher.fetch_latest_news()
+
+    if not news_stock:
+        print("No new stock news available.")
