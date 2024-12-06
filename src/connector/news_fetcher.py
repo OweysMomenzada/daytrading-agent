@@ -11,9 +11,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class NewsFetcher:
-    def __init__(self):
+    def __init__(self, num_articles=5):
+        """Initializes the NewsFetcher with an empty list of fetched news.
+
+        Args:
+            num_articles (int): The number of articles to fetch. Default is 5.
+        """
         self.fetched_news_about_stock = []
         self.fetched_news_general = []
+        self.num_articles = num_articles
 
     def get_article_content(self, url):
         """
@@ -45,59 +51,76 @@ class NewsFetcher:
         
         return content
 
-    def fetch_news_about_stock(self, ticker_symbol, num_articles=5):
+    def fetch_news_about_stock(self, ticker_symbol):
         """
         Fetches the latest news articles for the given ticker symbol.
+        If the article content is not available, it will be set to "Failed to retrieve the article content".
+        Otherwise, the content will be fetched using the get_article_content method.
 
         Args:
             ticker_symbol (str): The stock ticker symbol.
-            num_articles (int): The number of articles to fetch. Default is 5.
 
         Returns:
             list: A list of dictionaries containing the title, link, publisher, published time, and content of each article.
         """
         ticker = yf.Ticker(ticker_symbol)
-        news = ticker.news[:num_articles]
+        news = ticker.news[:self.num_articles]
         
-        news_list = []
+        existing_links = {item['link'] for item in self.fetched_news_about_stock}
+        
         for article in news:
-            publish_time = datetime.fromtimestamp(article['providerPublishTime']).strftime('%Y-%m-%d %H:%M:%S')
-            content = self.get_article_content(article['link'])
-            news_item = {
-                'title': article['title'],
-                'link': article['link'],
-                'publisher': article['publisher'],
-                'published': publish_time,
-                'content': content
-            }
-            news_list.append(news_item)
+            if article['link'] not in existing_links:
+                publish_time = datetime.fromtimestamp(article['providerPublishTime']).strftime('%Y-%m-%d %H:%M:%S')
+                content = self.get_article_content(article['link'])
+                news_item = {
+                    'title': article['title'],
+                    'link': article['link'],
+                    'publisher': article['publisher'],
+                    'published': publish_time,
+                    'content': content
+                }
+                self.fetched_news_about_stock.insert(0, news_item)
         
-        self.fetched_news = news_list
-
-    def fetch_latest_news(self, ticker_symbol, num_articles=5):
+        self.fetched_news_about_stock = self.fetched_news_about_stock[:self.num_articles]
+        
+    def fetch_latest_news(self, ticker_symbol):
         """
         Fetches the latest news for the given ticker symbol from Yahoo Finance.
 
         Args:
             ticker_symbol (str): The stock ticker symbol.
-            num_articles (int): The number of articles to fetch. Default is 5.
 
         Returns:
             list: A list of dictionaries containing the title, link, publisher, published time, and content of each news article.
         """
         news_data = news.get_yf_rss(ticker_symbol)
-        news_list = []
+        existing_links = {item['link'] for item in self.fetched_news_about_stock}
 
-        for article in news_data[:num_articles]:
-            publish_time = datetime.strptime(article['published'], '%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
-            content = self.get_article_content(article['link'])
-            news_item = {
-                'title': article['title'],
-                'link': article['link'],
-                'publisher': article['publisher'],
-                'published': publish_time,
-                'content': content
-            }
-            news_list.append(news_item)
+        for article in news_data[:self.num_articles]:
+            if article['link'] not in existing_links:
+                publish_time = datetime.strptime(article['published'], '%a, %d %b %Y %H:%M:%S %z').strftime('%Y-%m-%d %H:%M:%S')
+                content = self.get_article_content(article['link'])
+                news_item = {
+                    'title': article['title'],
+                    'link': article['link'],
+                    'publisher': "Yahoo Finance",
+                    'published': publish_time,
+                    'content': content
+                }
+                self.fetched_news_general.insert(0, news_item)
         
-        self.fetched_news_general = news_list
+        self.fetched_news_general = self.fetched_news_general[:self.num_articles]
+
+if __name__ == "__main__":
+    news_fetcher = NewsFetcher()
+    ticker_symbol = "MSFT"
+    news_fetcher.fetch_news_about_stock(ticker_symbol)
+    news_fetcher.fetch_latest_news(ticker_symbol)
+
+    print("News about the stock:")
+    for news_item in news_fetcher.fetched_news_about_stock:
+        print(news_item)
+    
+    print("\nLatest news:")
+    for news_item in news_fetcher.fetched_news_general:
+        print(news_item)
