@@ -3,4 +3,4 @@ beautifulsoup4
 yfinance
 selenium
 webdriver-manager
-yahoo_fin
+python-dotenv

@@ -1,5 +1,4 @@
 import yfinance as yf
-from yahoo_fin import news
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
