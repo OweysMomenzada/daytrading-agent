@@ -15,7 +15,7 @@ def fetch_stock_data(ticker, period="1mo", interval="1d"):
     """
     stock = yf.Ticker(ticker)
     data = stock.history(period=period, interval=interval)
-    data.index = data.index.tz_localize(None)  # Ensure datetime index without timezone
+    data.index = data.index.tz_localize(None)
     return data
 
 def add_technical_indicators(data):
