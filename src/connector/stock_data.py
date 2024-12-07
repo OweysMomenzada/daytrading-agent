@@ -23,7 +23,7 @@ def get_stock_data(ticker: str) -> Tuple[str, str]:
         stock_data = stock_data.to_markdown(index=False)
 
         # Fetch detailed data for current day
-        current_day_data = yf.download(ticker, period="1d", interval="2m")
+        current_day_data = yf.download(ticker, period="1d", interval="1m")
         current_day_data = current_day_data.to_markdown(index=False)
 
         return stock_data, current_day_data
