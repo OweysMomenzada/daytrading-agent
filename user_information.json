@@ -1,6 +1,7 @@
 {
     "user_location": "Hamburg, Germany",
     "available_budget": 8000,
+    "already_invested": 0,
     "trading_currency": "EUR",
     "trading_tickers": ["AAPL", "GOOGL", "TSLA", "MSFT", "NVDA"],
     "trading_market_location": "Germany and USA",

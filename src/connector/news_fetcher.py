@@ -144,9 +144,17 @@ class NewsFetcher:
             return False
         else:
             self.fetched_news_general = result
-            return result
+            output_text = []
+            for news_item in self.fetched_news_general:
+                title = f"Title: {news_item['title']}"
+                publisher = f"Publisher: {news_item['publisher']}"
+                published = f"Published at: {news_item['published']}"
+                content = f"Content: {news_item['content']}"
 
-    def fetch_news_about_stock(self, ticker_symbol):
+                output_text.append(f"\n{title}\n{publisher}\n{published}\n{content}\n")
+            return "\n".join(output_text)
+
+    def fetch_news_about_stock(self, ticker):
         """
         Fetches the latest news for the given ticker symbol from Yahoo Finance.
 
@@ -156,12 +164,21 @@ class NewsFetcher:
         Returns:
             list: A list of dictionaries containing the title, link, publisher, published time, and content of each news article.
         """
-        result = self.fetch_news_and_update(ticker_symbol=ticker_symbol, 
+        result = self.fetch_news_and_update(ticker_symbol=ticker, 
                                             list_of_news_to_update=self.fetched_news_about_stock)
         if not result:
             return False
         else:
-            return result
+            self.fetched_news_about_stock = result
+            output_text = []
+            for news_item in self.fetched_news_about_stock:
+                title = f"Title: {news_item['title']}"
+                publisher = f"Publisher: {news_item['publisher']}"
+                published = f"Published at: {news_item['published']}"
+                content = f"Content: {news_item['content']}"
+
+                output_text.append(f"\n{title}\n{publisher}\n{published}\n{content}\n")
+            return "\n".join(output_text)
         
     def fetch_websearch_results_on_stock(self, ticker="AAPL"):
         """Fetch web results on a given stock.

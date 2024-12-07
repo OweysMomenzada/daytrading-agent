@@ -52,7 +52,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
             ]
         )
 
-        return completion.choices[0].message
+        return completion.choices[0].message.content
     
     def generate_financial_evaluation_on_general_news(self):
         """ Generate a financial evaluation based on general news.
@@ -61,18 +61,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
             str: The generated financial evaluation.
         """
         # update the list first.
-        self.news_fetcher_obj.fetch_latest_news()
-        self.news_fetcher_obj.fetched_news_general
-        contexts = "\n".join(self.news_fetcher_obj.fetched_news_general)
-
-        combined_context = ""
-        for item in contexts:
-            combined_context += f"Newstitle: {item['title']}\n"
-            combined_context += f"Publisher: {item['publisher']}\n"
-            combined_context += f"Published: {item['published']}\n"
-            combined_context += f"Content: {item['content']}\n\n"
-
-        
+        combined_context = self.news_fetcher_obj.fetch_latest_news()
         instruction = f"""You are a financial analyst tasked with evaluating a block of financial news, each item provided with a title, publisher, publishing date, and content. Analyze the news collectively, prioritizing the most recent, significant, and impactful stories. You can consider your own expertise about historical events for your analysis.
 
 For the news block as a whole:
@@ -100,7 +89,7 @@ Focus on clarity, brevity, and actionable insights while filtering out irrelevan
             ]
         )
 
-        return completion.choices[0].message
+        return completion.choices[0].message.content
     
     def generate_financial_evaluation_on_stock_news(self, ticker):
         """ Generate a financial evaluation based on stock news.
@@ -113,18 +102,7 @@ Focus on clarity, brevity, and actionable insights while filtering out irrelevan
         """
         # update the list first.
         company_name = self.TICKER_OVERVIEW_DB[ticker]
-        self.news_fetcher_obj.fetch_news_about_stock(ticker=ticker)
-        self.news_fetcher_obj.fetched_news_general
-        contexts = "\n".join(self.news_fetcher_obj.fetched_news_general)
-
-        combined_context = ""
-        for item in contexts:
-            combined_context += f"Newstitle: {item['title']}\n"
-            combined_context += f"Publisher: {item['publisher']}\n"
-            combined_context += f"Published: {item['published']}\n"
-            combined_context += f"Content: {item['content']}\n\n"
-
-        
+        combined_context = self.news_fetcher_obj.fetch_news_about_stock(ticker=ticker)        
         instruction = f"""You are a financial analyst evaluating the {company_name} ({ticker}) stock for potential day trading with years of experience. Analyze the provided context, which includes recent news, price movements, analyst ratings, and other financial data as well as potential historical events based on your knowlededge. Identify the most relevant and actionable information while considering recency and relevancy of the given articles.
 
 Provide:
@@ -145,7 +123,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
             ]
         )
 
-        return completion.choices[0].message
+        return completion.choices[0].message.content
     
     def generate_sentiment_analysis(self, ticker):
         """ generate a sentiment analysis based on the news sentiment data.
@@ -198,7 +176,7 @@ Present your analysis in a detailed written report, structured in paragraphs wit
             ]
         )
 
-        return completion.choices[0].message
+        return completion.choices[0].message.content
     
     def generate_technical_indicator_analysis(self, ticker):
         """ Generate a technical indicator analysis based on the stock ticker.
@@ -256,4 +234,4 @@ Use this data to provide a day trading evaluation for the stock.
             ]
         )
 
-        return completion.choices[0].message
+        return completion.choices[0].message.content
