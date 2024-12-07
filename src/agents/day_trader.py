@@ -21,6 +21,36 @@ class DayTraderAgent:
             self.TICKER_OVERVIEW_DB = json.load(f)
         self.fin_agent = FinancialAnalystAgent()
 
+    def _get_user_stock_position(self, ticker):
+        """ Get the user's current stock position.
+
+        Args:
+            ticker (str): The stock ticker to evaluate.
+
+        Returns:
+            dict: The user's current stock position.
+        """
+        try:
+            with open(f'pending_positions/{ticker}.json') as f:
+                user_stock_position_input_text = ""
+                user_stock_position = json.load(f)
+                # the amount of the stock the user has in the stock
+                if user_stock_position["amount"] == "0":
+                    user_stock_position_input_text = "No current position on the stock."
+                else:
+                    user_stock_position_input_text =+ "Current Position Amount: " + user_stock_position["amount"] + "\n"
+                    user_stock_position_input_text =+ "Derivative type: " + user_stock_position["buy_type"] + "\n"
+        except FileNotFoundError:
+            user_stock_position = {
+                "amount": "0",
+                "buy_type": "none"
+            }
+            with open(f'pending_positions/{ticker}.json', 'w') as f:
+                json.dump(user_stock_position, f)
+            user_stock_position_input_text = "No current position on the stock."
+        
+        return user_stock_position_input_text
+
     def generate_day_trading_action(self, ticker):
         """ Generate a day trading action for a given stock ticker.
 
@@ -41,26 +71,7 @@ class DayTraderAgent:
         # get relevant user data and stock data
         user_data = get_user_data()
         three_days_stock_data, current_stock_data = get_stock_data(ticker)
-
-        # getting current user position on the stock
-        try:
-            with open(f'pending_positions/{ticker}.json') as f:
-                user_stock_position_input_text = ""
-                user_stock_position = json.load(f)
-                # the amount of the stock the user has in the stock
-                if user_stock_position["amount"] == "0":
-                    user_stock_position_input_text = "No current position on the stock."
-                else:
-                    user_stock_position_input_text =+ "Current Position Amount: " + user_stock_position["amount"] + "\n"
-                    user_stock_position_input_text =+ "Derivative type: " + user_stock_position["buy_type"] + "\n"
-        except FileNotFoundError:
-            user_stock_position = {
-                "amount": "0",
-                "buy_type": "none"
-            }
-            with open(f'pending_positions/{ticker}.json', 'w') as f:
-                json.dump(user_stock_position, f)
-            user_stock_position_input_text = "No current position on the stock."
+        user_stock_position = self._get_user_stock_position(ticker)
 
         context = f"""
 General News About the Company: {bing_eval}
@@ -85,6 +96,9 @@ Three-Day Stock Data: {three_days_stock_data}
 _____
 
 Minute-by-Minute Stock Data: {current_stock_data}
+_____
+
+Current purchased derivative on {company_name} ({ticker}): {user_stock_position}
 """
 
         instruction = f"""
