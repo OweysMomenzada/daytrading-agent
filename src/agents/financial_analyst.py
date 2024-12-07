@@ -51,7 +51,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
                 }
             ]
         )
-
+        print("Success: Generated Financial Evaluation on Bing Search Engine")
         return completion.choices[0].message.content
     
     def generate_financial_evaluation_on_general_news(self):
@@ -88,7 +88,7 @@ Focus on clarity, brevity, and actionable insights while filtering out irrelevan
                 }
             ]
         )
-
+        print("Success: Generated Financial Evaluation on General News")
         return completion.choices[0].message.content
     
     def generate_financial_evaluation_on_stock_news(self, ticker):
@@ -122,7 +122,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
                 }
             ]
         )
-
+        print("Success: Generated Financial Evaluation on Stock News")
         return completion.choices[0].message.content
     
     def generate_sentiment_analysis(self, ticker):
@@ -175,7 +175,7 @@ Present your analysis in a detailed written report, structured in paragraphs wit
                 }
             ]
         )
-
+        print("Success: Generated Sentiment Analysis")
         return completion.choices[0].message.content
     
     def generate_technical_indicator_analysis(self, ticker):
@@ -234,5 +234,5 @@ Use this data to provide a day trading evaluation for the stock.
                 }
             ]
         )
-
+        print("Success: Generated Technical Indicator Analysis")
         return completion.choices[0].message.content
