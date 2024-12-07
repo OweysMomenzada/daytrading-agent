@@ -1,6 +1,10 @@
+import requests
+import os
+import json
+
 import yfinance as yf
 from datetime import datetime
-import requests
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -8,6 +12,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class NewsFetcher:
     def __init__(self, num_articles=5):
@@ -18,7 +25,12 @@ class NewsFetcher:
         """
         self.fetched_news_about_stock = []
         self.fetched_news_general = []
+        self.fetched_websearch_about_stock = []
         self.num_articles = num_articles
+        self.subscription_key = os.getenv('AZURE_BING_SUBSCRIPTIONKEY')
+        self.endpoint = "https://api.bing.microsoft.com/v7.0/search"
+        with open('ticker_db.json') as f:
+            self.TICKER_OVERVIEW_DB = json.load(f)
 
     def get_article_content(self, url):
         """
@@ -50,7 +62,38 @@ class NewsFetcher:
             driver.quit()
         
         return content
+    
+    def bing_websearch(self, query):
+        """Websearching with bing. It provides a list of hits in form of strings using Selenium and a webdriver.
 
+        Args:
+            query (str): query
+
+        Returns:
+            list[str]: list of strings according to one hit of the search engine
+        """
+        headers = {
+            "Ocp-Apim-Subscription-Key": self.subscription_key
+        }
+        params = {
+            "q": query,
+            "count": 3,
+            "mkt": "en-US"
+        }
+
+        response = requests.get(self.endpoint, headers=headers, params=params)
+        web_results = []
+        if response.status_code == 200:
+            results = response.json()
+            for result in results.get("webPages", {}).get("value", []):
+                search_hit = self.get_article_content(url=result['url'])
+                if search_hit and type(search_hit)==str:
+                    web_results.append("Websearch Title: "+result['name']+"\n"+search_hit)
+            return web_results
+        else:
+            print(response.json())
+            return False
+        
     def fetch_news_and_update(self, ticker_symbol, list_of_news_to_update):
         """
         Fetches the latest news articles for the given ticker symbol.
@@ -119,7 +162,21 @@ class NewsFetcher:
             return False
         else:
             return result
+        
+    def fetch_websearch_results_on_stock(self, ticker="AAPL"):
+        """Fetch web results on a given stock.
 
+        Args:
+            ticker (str): ticker. Defaults to "AAPL".
+
+        Returns:
+            list[str]: list of strings according to one hit of the search engine
+        """
+        selected_companyname = self.TICKER_OVERVIEW_DB[ticker]
+        query = f"latest stock news, earnings report, analyst ratings, recent price movements, short-term catalysts about '{selected_companyname}'"
+
+        return self.bing_websearch(query=query)
+    
 if __name__ == "__main__":
     news_fetcher = NewsFetcher(num_articles=2)
     ticker_symbol = "MSFT"
@@ -140,3 +197,7 @@ if __name__ == "__main__":
 
     if not news_stock:
         print("No new stock news available.")
+
+    print("Trying to fetch the websearch:")
+    websearch_results = news_fetcher.fetch_websearch_results_on_stock(ticker=ticker_symbol)
+    print(websearch_results)
