@@ -110,13 +110,13 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 
 ### **JSON Response Format**:
 ```json
-{
+{{
   "action": "buy",  // Options: "buy", "hold", "sell".
   "buy_type": "long", // Options: "long", "short". Use null, if "hold" action was chosen
   "amount": "1000", // Amount in EUR to buy/sell. Use null if "hold" actions was chosen.
   "look_back_in_seconds": 1000, 
   "reason_of_decision": "Detailed explanation of why this action was chosen based on the input data and analysis."
-}
+}}
 ```
 
 ---
@@ -125,35 +125,35 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 
 #### **Example 1: Buying with a Long Position**
 ```json
-{
+{{
   "action": "buy",
   "buy_type": "long",
   "amount": "1000",
   "look_back_in_seconds": 600,
   "reason_of_decision": "The stock shows positive momentum based on recent technical indicators, increasing sentiment, and bullish market conditions."
-}
+}}
 ```
 
 #### **Example 2: Holding**
 ```json
-{
+{{
   "action": "hold",
   "buy_type": null,
   "amount": null,
   "look_back_in_seconds": 1800,
   "reason_of_decision": "The market data and sentiment are inconclusive, and no strong signals to act are evident."
-}
+}}
 ```
 
 #### **Example 3: Selling**
 ```json
-{
+{{
   "action": "sell",
   "buy_type": null,
   "amount": "500",
   "look_back_in_seconds": 1200,
   "reason_of_decision": "Technical indicators suggest a reversal, and risk mitigation is recommended based on declining market sentiment."
-}
+}}
 ```
 
 ---
@@ -192,7 +192,7 @@ The Day Trader Agent must consider the following inputs for decision-making:
 """
 
         completion = self.client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4-1106-preview",
             messages=[
                 {"role": "system", "content": instruction},
                 {
