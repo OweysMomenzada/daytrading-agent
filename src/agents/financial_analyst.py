@@ -222,6 +222,7 @@ Use this data to provide a day trading evaluation for the stock.
 
 - Provide a detailed paragraph summarizing the assessment.
 - State a clear opinion on the day trading prospects of the stock.
+- Especially focus on the last three days of the data to ensure the analysis is up-to-date.
 """
         completion = self.client.chat.completions.create(
             model="gpt-4o",
