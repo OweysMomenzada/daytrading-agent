@@ -2,6 +2,8 @@ import os
 import requests
 from dotenv import load_dotenv
 
+load_dotenv()
+
 class NewsSentiment:
     """
     A class to fetch news sentiment data using the Alpha Vantage API.
@@ -11,7 +13,6 @@ class NewsSentiment:
         Initializes the NewsSentiment class by loading environment variables
         and retrieving the API key.
         """
-        load_dotenv()
         self.api_key = os.getenv('ALPHA_VANTAGE_API_KEY')
         if not self.api_key:
             raise ValueError("API key not found in environment variables")
