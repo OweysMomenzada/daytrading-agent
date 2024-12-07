@@ -1,0 +1,8 @@
+{
+    "user_location": "Hamburg, Germany",
+    "available_budget": 8000,
+    "trading_currency": "EUR",
+    "trading_tickers": ["AAPL", "GOOGL", "TSLA", "MSFT", "NVDA"],
+    "trading_market_location": "Germany and USA",
+    "risk_tolerance_description": "I am willing to take some higher risks for higher returns. But not with more than 2000€ of my budget for a single trade. I am willing to use 50% of my whole budget for trading for several trades."
+}
