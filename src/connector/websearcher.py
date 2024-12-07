@@ -10,6 +10,14 @@ subscription_key = os.getenv('AZURE_BING_SUBSCRIPTIONKEY')
 endpoint = "https://api.bing.microsoft.com/v7.0/search"
 
 def bing_websearch(query):
+    """Websearching with bing. It provides a list of hits in form of strings using Selenium and a webdriver.
+
+    Args:
+        query (str): query
+
+    Returns:
+        list[str]: list of strings 
+    """
     headers = {
         "Ocp-Apim-Subscription-Key": subscription_key
     }
