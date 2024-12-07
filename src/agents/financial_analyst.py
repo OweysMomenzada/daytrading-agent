@@ -4,7 +4,7 @@ import json
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from connector import news_fetcher, news_sentiment
+from connector import news_fetcher, news_sentiment, technical_indicators
 
 load_dotenv()
 
@@ -194,6 +194,64 @@ Present your analysis in a detailed written report, structured in paragraphs wit
                 {
                     "role": "user",
                     "content": news_sentiment_context
+                }
+            ]
+        )
+
+        return completion.choices[0].message
+    
+    def generate_technical_indicator_analysis(self, ticker):
+        """ Generate a technical indicator analysis based on the stock ticker.
+
+        Args:
+            ticker (str): The stock ticker to evaluate.
+
+        Returns:
+            str: The generated technical indicator analysis.
+        """
+        company_name = self.TICKER_OVERVIEW_DB[ticker]
+        technical_indicators_context = technical_indicators.fetch_technical_indicators_of_ticker(ticker=ticker)
+        
+        instruction = f"""Analyze the technical indicators of a stock from the past 30 days at one-day intervals to generate an opinion about day trading prospects for {company_name} ({ticker}) stock. The data for each day includes:
+
+- RSI: Relative Strength Index
+- SMA_20: 20-period Simple Moving Average
+- EMA_20: 20-period Exponential Moving Average
+- Bollinger Bands: Lower (BBL_20_2.0), Middle (BBM_20_2.0), and Upper (BBU_20_2.0)
+- VWAP: Volume-Weighted Average Price
+- ATR: Average True Range
+
+Use this data to provide a day trading evaluation for the stock.
+
+# Steps
+
+1. **Data Analysis for Each Technical Indicator:**
+   - Evaluate trends and fluctuations in RSI for overbought or oversold conditions.
+   - Analyze SMA_20 and EMA_20 to identify momentum and trend direction.
+   - Assess the convergence/divergence of Bollinger Bands to detect volatility expansions or contractions.
+   - Examine VWAP for price movement relative to average trading volume.
+   - Calculate the average ATR for assessing potential price volatility.
+
+2. **Cross-Indicator Analysis:**
+   - Combine indicator signals (e.g., RSI with Bollinger Bands) for a more comprehensive analysis.
+   - Look for confirmation of trends or reversals by cross-referencing indicators.
+
+3. **Conclusion Formulation:**
+   - Synthesize the analysis into a coherent opinion about the stock's suitability for day trading.
+   - Consider if the indicators suggest favorable entry and exit points, or potential market risks.
+
+# Output Format
+
+- Provide a detailed paragraph summarizing the assessment.
+- State a clear opinion on the day trading prospects of the stock.
+"""
+        completion = self.client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": instruction},
+                {
+                    "role": "user",
+                    "content": technical_indicators_context
                 }
             ]
         )
