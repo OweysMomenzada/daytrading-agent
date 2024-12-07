@@ -4,3 +4,7 @@ yfinance
 selenium
 webdriver-manager
 python-dotenv
+pandas==2.0.3
+ta
+pandas-ta==0.3.14b
+numpy==1.24.3
