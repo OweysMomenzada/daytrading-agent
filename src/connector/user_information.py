@@ -23,7 +23,7 @@ def check_market_status():
             time_until_us_open = (datetime.combine(current_time.date(), us_market_opening_time) - current_time).total_seconds() // 60
         else:
             time_until_us_open = ((datetime.combine(current_time.date() + timedelta(days=1), us_market_opening_time) - current_time).total_seconds() // 60)
-        is_us_market_open = f"closed (opens in {int(time_until_us_open)} minutes)"
+        is_us_market_open = f"opens in {int(time_until_us_open)} minutes"
     else:
         is_us_market_open = "open (now)"
 
@@ -36,7 +36,7 @@ def check_market_status():
             time_until_market_open = ((datetime.combine(current_time.date() + timedelta(days=1), german_market_opening_time) - current_time).total_seconds() // 60)
         is_market_open = f"closed (opens in {int(time_until_market_open)} minutes)"
     else:
-        is_market_open = "open (now)"
+        is_market_open = "open (USER CAN TRADE NOW!)"
 
     return is_us_market_open, is_market_open
 
