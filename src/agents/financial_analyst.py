@@ -16,7 +16,7 @@ class FinancialAnalystAgent:
         self.client = OpenAI(api_key=api_key)
         with open('ticker_db.json') as f:
             self.TICKER_OVERVIEW_DB = json.load(f)
-        self.news_fetcher_obj = news_fetcher.NewsFetcher(num_articles=5)
+        self.news_fetcher_obj = news_fetcher.NewsFetcher(num_articles=9)
         self.news_sentiment_obj = news_sentiment.NewsSentiment(relevance_threshold=0.55)
 
     def generate_financial_evaluation_on_bing_search_engine(self, ticker):

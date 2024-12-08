@@ -77,7 +77,7 @@ class NewsFetcher:
         }
         params = {
             "q": query,
-            "count": 3,
+            "count": 7,
             "mkt": "en-US"
         }
 
