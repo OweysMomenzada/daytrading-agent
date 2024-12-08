@@ -5,11 +5,12 @@ __pycache__/
 
 # C extensions
 *.so
-
+*.txt
+pending_positions/*.json
 # Distribution / packaging
 .Python
 build/
-develop-eggs/
+develop-eggs/1
 dist/
 downloads/
 eggs/

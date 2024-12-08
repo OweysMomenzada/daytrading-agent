@@ -8,6 +8,6 @@ def generate_day_trading_action(ticker):
 
 if __name__ == '__main__':
     start_time = time.time()
-    print(generate_day_trading_action('AAPL'))
+    print(generate_day_trading_action('MSFT'))
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds.")

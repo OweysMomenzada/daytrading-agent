@@ -42,7 +42,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
 """
 
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {
@@ -79,7 +79,7 @@ Focus on clarity, brevity, and actionable insights while filtering out irrelevan
 """
 
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {
@@ -113,7 +113,7 @@ Provide:
 Be concise and ensure your analysis is focused, actionable, and cautious of risks.
 """
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {
@@ -166,7 +166,7 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
 Present your analysis in a detailed written report, structured in paragraphs with comprehensive insights and a clear conclusion on the trading strategy. Begin with a summary of key insights, followed by detailed analysis, and end with a final trading recommendation. 
 """
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {
@@ -225,7 +225,7 @@ Use this data to provide a day trading evaluation for the stock.
 - Especially focus on the last three days of the data to ensure the analysis is up-to-date.
 """
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {

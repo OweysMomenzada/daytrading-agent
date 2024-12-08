@@ -1,4 +1,4 @@
-# daytrading-agent
+# daytrading-agent in MEZ timezone
 Daytrading Agent
 
 

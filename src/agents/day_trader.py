@@ -38,8 +38,8 @@ class DayTraderAgent:
                 if user_stock_position["amount"] == "0":
                     user_stock_position_input_text = "No current position on the stock."
                 else:
-                    user_stock_position_input_text =+ "Current Position Amount: " + user_stock_position["amount"] + "\n"
-                    user_stock_position_input_text =+ "Derivative type: " + user_stock_position["buy_type"] + "\n"
+                    user_stock_position_input_text += "Current Position Amount: " + user_stock_position["amount"] + "\n"
+                    user_stock_position_input_text += "Derivative type: " + user_stock_position["buy_type"] + "\n"
         except FileNotFoundError:
             user_stock_position = {
                 "amount": "0",
@@ -113,7 +113,7 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
   "buy_type": "long", // Options: "long", "short". Use null, if "hold" action was chosen
   "amount": "1000", // Amount in EUR to buy/sell. Use null if "hold" actions was chosen.
   "look_back_in_seconds": 1000, 
-  "reason_of_decision": "Detailed explanation of why this action was chosen based on the input data and analysis."
+  "reason_of_decision": "Detailed explanation of why this action was chosen based on the input data and analysis and maybe the amount of seconds which was chosen."
 }}
 ```
 
@@ -188,6 +188,7 @@ The Day Trader Agent must consider the following inputs for decision-making:
   - Prepare a position based on pre-market indicators or known events likely to influence the stock's behavior at the open.
 - You must follow the Day Trading Principles outlined below to ensure optimal decision-making.
 - Use your own knolwedge and historical events as well as experience to make the best decision for the user.
+- Pay close attention to the opening time of the US market. 
 
 ---
 
@@ -212,11 +213,11 @@ To excel as a day-trading agent, you must prioritize the following consideration
     - Avoid trading based solely on a single timeframe to reduce false signals.
 7. User-Specific Factors:
     - Take the user’s risk tolerance and available budget into account to determine position size and action.
-    - Ensure compliance with trading windows specific to the user's location and time zone.
+    - Ensure compliance with trading windows specific to the user's location and time zone.‚
 """
 
         completion = self.client.chat.completions.create(
-            model="gpt-4-1106-preview",
+            model="chatgpt-4o-latest",
             messages=[
                 {"role": "system", "content": instruction},
                 {

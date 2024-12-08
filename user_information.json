@@ -5,5 +5,5 @@
     "trading_currency": "EUR",
     "trading_tickers": ["AAPL", "GOOGL", "TSLA", "MSFT", "NVDA"],
     "trading_market_location": "Germany and USA",
-    "risk_tolerance_description": "I am cautious and prefer to invest only when I feel confident about maximizing gains or minimizing losses. If I feel that the stock is going to perform good (or bad in a put situation) than I usually invest between 1000 and 1400€, but almost never exceeded 2000€ for a trade."
+    "risk_tolerance_description": "I am cautious and prefer to invest only when I feel confident about maximizing gains or minimizing losses. If I feel that the stock is going to perform good (or bad in a put situation) than I usually invest between 1000 and 1400€, but almost never exceeded 2000€ for a trade. I do not trade for a day, if there is a high risk or uncertainty in the market. I prefer to wait for the right moment to invest."
 }
