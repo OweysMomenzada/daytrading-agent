@@ -10,3 +10,5 @@ pandas-ta==0.3.14b
 numpy==1.24.3
 openai
 tabulate
+streamlit
+markdown

@@ -38,8 +38,9 @@ class DayTraderAgent:
                 if user_stock_position["amount"] == "0":
                     user_stock_position_input_text = "No current position on the stock."
                 else:
-                    user_stock_position_input_text += "Current Position Amount: " + user_stock_position["amount"] + "\n"
-                    user_stock_position_input_text += "Derivative type: " + user_stock_position["buy_type"] + "\n"
+                    user_stock_position_input_text = "No current position on the stock."
+                    # user_stock_position_input_text += "Current Position Amount: " + user_stock_position["amount"] + "\n"
+                    # user_stock_position_input_text += "Derivative type: " + user_stock_position["buy_type"] + "\n"
         except FileNotFoundError:
             user_stock_position = {
                 "amount": "0",
@@ -226,8 +227,4 @@ To excel as a day-trading agent, you must prioritize the following consideration
                 }
             ]
         )
-        # saving the context variable as txt:
-        with open('context.txt', 'w') as context_file:
-            context_file.write(context)
-
-        return completion.choices[0].message.content
+        return completion.choices[0].message.content, context

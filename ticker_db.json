@@ -1,24 +1,6 @@
 {
     "NVDA": "NVIDIA Corporation",
-    "TSLA": "Tesla, Inc.",
-    "GOOG": "Google LLC",
     "GOOGL": "Google LLC",
     "AAPL": "Apple Inc.",
-    "IBM": "International Business Machines Corporation",
-    "MSFT": "Microsoft Corporation",
-    "NFLX": "Netflix, Inc.",
-    "AMZN": "Amazon.com, Inc.",
-    "META": "Meta Platforms, Inc.",
-    "AVGO": "Broadcom Inc.",
-    "ORCL": "Oracle Corporation",
-    "CSCO": "Cisco Systems, Inc.",
-    "ADBE": "Adobe Inc.",
-    "CRM": "Salesforce, Inc.",
-    "INTC": "Intel Corporation",
-    "AMD": "Advanced Micro Devices, Inc.",
-    "QCOM": "Qualcomm Incorporated",
-    "TXN": "Texas Instruments Incorporated",
-    "NXPI": "NXP Semiconductors N.V.",
-    "MU": "Micron Technology, Inc.",
-    "NVAX": "Novavax, Inc."
+    "MSFT": "Microsoft Corporation"
   }  
