@@ -1,92 +1,74 @@
 import json
-import time
 import re
-import os
-import streamlit as st
+import logging
 from dotenv import load_dotenv
 from agents.day_trader import DayTraderAgent
 from connector.email_bot import send_email
+from datetime import datetime
+import schedule
+import time
+import pytz
 
-# Load environment variables
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
-
-admin = os.getenv("ADMIN_NAME")
-password = os.getenv("ADMIN_PW")
-
 day_trader = DayTraderAgent()
-VALID_CREDENTIALS = {
-    admin: password,
-}
+MEZ = pytz.timezone('Europe/Berlin')
 
-def authenticate(username, password):
-    """Simple authentication function."""
-    return VALID_CREDENTIALS.get(username) == password
+def extract_json_from_string(string):
+    json_pattern = re.compile(r'```json(.*?)```', re.DOTALL)
+    json_match = json_pattern.search(string)
+    if json_match:
+        json_str = json_match.group(1).strip()
+        json_ = json.loads(json_str)
 
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
+        formatted_action = f"**Action:** {json_['action']} \n\n Certificate Type: {json_['buy_type']} \n\n **Amount**: {json_['amount']} \n\n **Rechecking process in seconds**: {json_['look_back_in_seconds']} \n\n **Reason of Decision:** {json_['reason_of_decision']}"
+        if json_['buy_type'] == None:
+            return "hold", formatted_action
+        else:
+            return json_['buy_type'], formatted_action
+    return None, string
 
-if "login_attempted" not in st.session_state:
-    st.session_state.login_attempted = False
-
-def handle_login():
-    """Handle the login process."""
-    if authenticate(st.session_state.username, st.session_state.password):
-        st.session_state.authenticated = True
-        st.success("Successfully logged in!")
-        time.sleep(1)
-        st.experimental_rerun()
-    else:
-        st.error("Invalid username or password.")
-        st.session_state.login_attempted = True
-
-if not st.session_state.authenticated:
-    # Show login screen
-    st.title("Login")
-    st.text_input("Username", key="username", on_change=handle_login)
-    st.text_input("Password", type="password", key="password", on_change=handle_login)
-    
-    if st.button("Login"):
-        handle_login()
-
-else:
-    # Main app content
-    st.title("Day Trading Agent")
-
+def perform_ticker_evaluation():
+    """Perform ticker evaluation and send emails."""
+    logging.info("Ticker evaluation job started.")
     with open('ticker_db.json') as f:
         ticker_db = json.load(f)
     tickers = ticker_db.keys()
+    
+    for ticker in tickers:
+        print(ticker)
+        action, context = day_trader.generate_day_trading_action(ticker)
+        try:
+            proposal, formatted_action = extract_json_from_string(action)
+            output_text = f"{formatted_action} \n\n\n Here is the data I used to support my decision: \n {context}"
+            send_email(body=output_text, ticker=ticker, proposal=proposal)
+        except:
+            output_text = f"{action} \n\n\n Here is the data I used to support my decision: \n‚{context}"
+            send_email(body=output_text, ticker=ticker, proposal="Unknown")
+    logging.info("Ticker evaluation job completed.")
 
-    def extract_json_from_string(string):
-        json_pattern = re.compile(r'```json(.*?)```', re.DOTALL)
-        json_match = json_pattern.search(string)
-        if json_match:
-            json_str = json_match.group(1).strip()
-            json_ = json.loads(json_str)
+def is_weekday():
+    today = datetime.now(MEZ).weekday()  # Monday is 0, Sunday is 6
+    return 0 <= today <= 4
 
-            formatted_action = f"**Action:** {json_['action']} \n\n Certificate Type: {json_['buy_type']} \n\n **Amount**: {json_['amount']} \n\n **Rechecking process in seconds**: {json_['look_back_in_seconds']} \n\n **Reason of Decision:** {json_['reason_of_decision']}"
-            if json_['buy_type'] == None:
-                return "hold", formatted_action
-            else:
-                return json_['buy_type'], formatted_action
-        return None, string
+def schedule_tasks():
+    schedule.every().monday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().monday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().tuesday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().tuesday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().wednesday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().wednesday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().thursday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().thursday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().friday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+    schedule.every().friday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
 
-    selected_tickers = st.multiselect('Select tickers', tickers)
+def run_scheduler():
+    schedule_tasks()
+    logging.info("Scheduler started.")
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
-    if st.button('Submit'):
-        for ticker in selected_tickers:
-            action, context = day_trader.generate_day_trading_action(ticker)
-            try:
-                proposal, formatted_action = extract_json_from_string(action)
-                output_text = f"{formatted_action} \n\n\n Here is the data I used to support my decision: \n {context}"
-                send_email(body=output_text, ticker=ticker, proposal=proposal)
-            except:
-                output_text = f"{action} \n\n\n Here is the data I used to support my decision: \n‚{context}"
-                send_email(body=output_text, ticker=ticker, proposal="Unknown")
-
-            time.sleep(10)
-            st.write(f"Day trading action for {ticker}: {action}")
-
-    if st.button("Logout"):
-        st.session_state.authenticated = False
-        st.session_state.login_attempted = False
-        st.experimental_rerun()
+if __name__ == "__main__":
+    run_scheduler()

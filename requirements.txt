@@ -12,3 +12,4 @@ openai
 tabulate
 streamlit
 markdown
+schedule
