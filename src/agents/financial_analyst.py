@@ -5,6 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 from connector import news_fetcher, news_sentiment, technical_indicators
+from agents.utils.helpers import retry_request
 
 load_dotenv()
 
@@ -40,17 +41,20 @@ Provide:
 
 Be concise and ensure your analysis is focused, actionable, and cautious of risks.
 """
-
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         print("Success: Generated Financial Evaluation on Bing Search Engine")
         return completion.choices[0].message.content
     
@@ -77,17 +81,20 @@ Your response should include:
 
 Focus on clarity, brevity, and actionable insights while filtering out irrelevant or outdated information."
 """
-
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": combined_context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": combined_context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         print("Success: Generated Financial Evaluation on General News")
         return completion.choices[0].message.content
     
@@ -112,16 +119,20 @@ Provide:
 
 Be concise and ensure your analysis is focused, actionable, and cautious of risks.
 """
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": combined_context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": combined_context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         print("Success: Generated Financial Evaluation on Stock News")
         return completion.choices[0].message.content
     
@@ -165,16 +176,20 @@ Be concise and ensure your analysis is focused, actionable, and cautious of risk
 
 Present your analysis in a detailed written report, structured in paragraphs with comprehensive insights and a clear conclusion on the trading strategy. Begin with a summary of key insights, followed by detailed analysis, and end with a final trading recommendation. 
 """
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": news_sentiment_context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": news_sentiment_context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         print("Success: Generated Sentiment Analysis")
         return completion.choices[0].message.content
     
@@ -224,15 +239,19 @@ Use this data to provide a day trading evaluation for the stock.
 - State a clear opinion on the day trading prospects of the stock.
 - Especially focus on the last three days of the data to ensure the analysis is up-to-date.
 """
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": technical_indicators_context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": technical_indicators_context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         print("Success: Generated Technical Indicator Analysis")
         return completion.choices[0].message.content

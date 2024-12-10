@@ -5,6 +5,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 from agents.financial_analyst import FinancialAnalystAgent
+from agents.utils.helpers import retry_request
 from connector.user_information import get_user_data
 from connector.stock_data import get_stock_data
 
@@ -208,17 +209,20 @@ To excel as a day-trading agent, you must prioritize the following consideration
     - Take the user’s risk tolerance and available budget into account to determine position size and action.
     - Ensure compliance with trading windows specific to the user's location and time zone.‚
 """
-
-        completion = self.client.chat.completions.create(
-            model="chatgpt-4o-latest",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="chatgpt-4o-latest",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         return completion.choices[0].message.content, context
 
     def generate_summary_of_evaluation(self, ticker, context):
@@ -244,15 +248,18 @@ Analyze the provided data on {company_name} ({ticker}) and today’s financial m
 
 Ensure brevity, clarity, and prioritization of actionable insights. Avoid extraneous information or excessive detail.
 """
-
-        completion = self.client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": instruction},
-                {
-                    "role": "user",
-                    "content": context
-                }
-            ]
-        )
+        def make_api_call():
+            completion = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": instruction},
+                    {
+                        "role": "user",
+                        "content": context
+                    }
+                ]
+            )
+            return completion
+        
+        completion = retry_request(make_api_call)
         return completion.choices[0].message.content
