@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
 from typing import Tuple
+from pytz import timezone
 
 def get_stock_data(ticker: str) -> Tuple[str, str]:
     """
@@ -14,8 +15,9 @@ def get_stock_data(ticker: str) -> Tuple[str, str]:
         Tuple[str, str]: (3-day historical data, current day intraday data) in markdown format
     """
     try:
-        # Calculate dates
-        end_date = datetime.now().date()
+        mez_tz = timezone('Europe/Berlin')
+        now_mez = datetime.now(mez_tz)
+        end_date = now_mez.date()
         start_date = end_date - timedelta(days=3)
 
         # Get historical data
