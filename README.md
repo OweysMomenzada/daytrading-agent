@@ -12,3 +12,8 @@ write an app name and copy the code. Insert it into your env
 ### Bing Search
 1. Create a bing search instance on Azure 
 2. Copy the azure keys
+
+
+### run docker
+docker build -t agent-trader .
+docker run --env-file .env agent-trader
