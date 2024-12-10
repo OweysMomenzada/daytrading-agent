@@ -66,7 +66,7 @@ def run_day_trading():
     if is_weekday() and is_time_to_trade():
         perform_ticker_evaluation()
     else:
-        logging.info("No action required.")‚
+        logging.info("No action required.")
 
 if __name__ == "__main__":
     run_day_trading()
