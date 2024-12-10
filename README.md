@@ -30,3 +30,13 @@ Create an heroku app:
 ```
 heroku create daytrader-agent
 ```
+
+Install the Heroku Scheduler add-on:
+```
+heroku addons:create scheduler:standard
+```
+
+open schedular dashboard:
+```
+heroku addons:open scheduler
+```
