@@ -101,8 +101,6 @@ Current purchased derivative on {company_name} ({ticker}): {user_stock_position}
 """
 
         instruction = f"""
-### Revised Prompt:
-
 You are a **Day Trader Agent** tasked with deciding whether to take a **long** or **short** position on {company_name} ({ticker}) stock or to hold the current position. You must respond strictly in JSON format following the schema below. Your decisions must be based on the given inputs and adhere to the specified guidelines and day trading principles.
 
 ---
@@ -219,6 +217,42 @@ To excel as a day-trading agent, you must prioritize the following consideration
 
         completion = self.client.chat.completions.create(
             model="chatgpt-4o-latest",
+            messages=[
+                {"role": "system", "content": instruction},
+                {
+                    "role": "user",
+                    "content": context
+                }
+            ]
+        )
+        return completion.choices[0].message.content, context
+
+    def generate_summary_of_evaluation(self, ticker, context):
+        """ Generate a summary of the evaluation for a given stock ticker.
+
+        Args:
+            ticker (str): The stock ticker to evaluate.
+            context (str): The context for the evaluation.
+
+        Returns:    
+            str: The generated financial evaluation.
+        """
+        company_name = self.TICKER_OVERVIEW_DB[ticker]
+        instruction = f"""
+You are an expert in Daytrading providing really valuable insights to the user. Your task is to generate a concise and actionable summary of the given data by the user for {company_name} ({ticker}) and today’s financial market conditions. The summary should focus on the most critical day trading insights and be structured for quick reading and decision-making.
+
+Analyze the provided data on {company_name} ({ticker}) and today’s financial market conditions to generate the most critical day trading insights. Summarize the information into bullet points for quick reading. Focus on the following:
+	1.	Key Drivers: Highlight the main factors affecting {ticker} stock movement today (e.g., news, macroeconomic data, technical analysis signals).
+	2.	Trading Strategy: Recommend actionable trading strategies (e.g., breakout levels, support/resistance zones, scalping opportunities).
+	3.	Risk Management: Provide clear guidelines for managing risk in today’s trading conditions.
+	4.	Market Context: Briefly mention relevant macroeconomic or sector-wide influences impacting {ticker}’s performance.
+	5.	Conclusion: Summarize the overall outlook for {company_name} ({ticker}) as a day trading candidate.
+
+Ensure brevity, clarity, and prioritization of actionable insights. Avoid extraneous information or excessive detail.
+"""
+
+        completion = self.client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": instruction},
                 {

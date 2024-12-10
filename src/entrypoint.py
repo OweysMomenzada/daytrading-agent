@@ -34,14 +34,14 @@ def perform_ticker_evaluation():
     tickers = ticker_db.keys()
     
     for ticker in tickers:
-        print(ticker)
         action, context = day_trader.generate_day_trading_action(ticker)
+        summary = day_trader.generate_summary_of_evaluation(ticker, context)
         try:
             proposal, formatted_action = extract_json_from_string(action)
-            output_text = f"{formatted_action} \n\n\n Here is the data I used to support my decision: \n {context}"
+            output_text = f"{formatted_action} \n\n\n Summary of the data I used: {summary} \n\n\n Here is the data I used to support my decision in detail: \n {context}"
             send_email(body=output_text, ticker=ticker, proposal=proposal)
         except:
-            output_text = f"{action} \n\n\n Here is the data I used to support my decision: \n‚{context}"
+            output_text = f"{action} \n\n\n Summary of the data I used: {summary} \n\n\n Here is the data I used to support my decision in detail: \n {context}"
             send_email(body=output_text, ticker=ticker, proposal="Unknown")
     logging.info("Ticker evaluation job completed.")
 
