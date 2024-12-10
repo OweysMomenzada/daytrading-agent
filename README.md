@@ -17,3 +17,16 @@ write an app name and copy the code. Insert it into your env
 ### run docker
 docker build -t agent-trader .
 docker run --env-file .env agent-trader
+
+### Use free heroku scheduler
+Use free heroku scheduler to run jobs automatically on heroku.
+
+```
+heroku login
+heroku container:login
+```
+
+Create an heroku app:
+```
+heroku create daytrader-agent
+```
