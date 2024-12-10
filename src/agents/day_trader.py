@@ -261,4 +261,4 @@ Ensure brevity, clarity, and prioritization of actionable insights. Avoid extran
                 }
             ]
         )
-        return completion.choices[0].message.content, context
+        return completion.choices[0].message.content
