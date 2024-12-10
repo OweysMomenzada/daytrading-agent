@@ -40,3 +40,25 @@ open schedular dashboard:
 ```
 heroku addons:open scheduler
 ```
+
+Do a git push heroku!
+```
+git push heroku main
+```
+
+Set the env variables:
+````
+heroku config:set ALPHA_VANTAGE_API_KEY="....."
+heroku config:set GMAIL_APP_PASSWORD=" ...."
+heroku config:set SENDER_EMAIL="..."
+heroku config:set RECIPIENT_EMAIL="...."
+heroku config:set OPENAI_KEY="sk-pr...."
+heroku config:set AZURE_BING_SUBSCRIPTIONKEY="....."
+heroku config:set ADMIN_PW="..."
+heroku config:set ADMIN_NAME="..."
+```
+
+verify variables:
+```
+heroku config
+```
