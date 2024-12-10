@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 from agents.day_trader import DayTraderAgent
 from connector.email_bot import send_email
 from datetime import datetime
-import schedule
-import time
 import pytz
 
 logging.basicConfig(level=logging.INFO)
@@ -51,24 +49,24 @@ def is_weekday():
     today = datetime.now(MEZ).weekday()  # Monday is 0, Sunday is 6
     return 0 <= today <= 4
 
-def schedule_tasks():
-    schedule.every().monday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().monday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().tuesday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().tuesday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().wednesday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().wednesday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().thursday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().thursday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().friday.at("07:50").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
-    schedule.every().friday.at("15:10").do(lambda: perform_ticker_evaluation() if is_weekday() else None)
+def is_time_to_trade():
+    now = datetime.now(MEZ)
+    # between 08:05 and 8:20
+    if now.hour == 8 and 5 <= now.minute <= 20:
+        return True
+    # else between 15:15 and 15:45
+    if now.hour == 15 and 15 <= now.minute <= 45:
+        return True
+    # else between 20:00 and 20:10
+    if now.hour == 20 and 0 <= now.minute <= 10:
+        return True
+    return False
 
-def run_scheduler():
-    schedule_tasks()
-    logging.info("Scheduler started.")
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+def run_day_trading():
+    if is_weekday() and is_time_to_trade():
+        perform_ticker_evaluation()
+    else:
+        logging.info("No action required.")‚
 
 if __name__ == "__main__":
-    run_scheduler()
+    run_day_trading()
