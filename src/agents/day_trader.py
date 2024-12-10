@@ -36,9 +36,9 @@ class DayTraderAgent:
                 user_stock_position = json.load(f)
                 # the amount of the stock the user has in the stock
                 if user_stock_position["amount"] == "0":
-                    user_stock_position_input_text = "No current position on the stock."
+                    user_stock_position_input_text = "User is invested in the stock."
                 else:
-                    user_stock_position_input_text = "No current position on the stock."
+                    user_stock_position_input_text = "User is invested in the stock."
                     # user_stock_position_input_text += "Current Position Amount: " + user_stock_position["amount"] + "\n"
                     # user_stock_position_input_text += "Derivative type: " + user_stock_position["buy_type"] + "\n"
         except FileNotFoundError:
@@ -48,7 +48,7 @@ class DayTraderAgent:
             }
             with open(f'pending_positions/{ticker}.json', 'w') as f:
                 json.dump(user_stock_position, f)
-            user_stock_position_input_text = "No current position on the stock."
+            user_stock_position_input_text = "User is invested in the stock."
         
         return user_stock_position_input_text
 
@@ -101,7 +101,7 @@ Current purchased derivative on {company_name} ({ticker}): {user_stock_position}
 """
 
         instruction = f"""
-You are a **Day Trader Agent** tasked with deciding whether to take a **long** or **short** position on {company_name} ({ticker}) stock or to hold the current position. You must respond strictly in JSON format following the schema below. Your decisions must be based on the given inputs and adhere to the specified guidelines and day trading principles.
+You are a **Day Trader Agent** tasked with deciding whether to take a **long** position on {company_name} ({ticker}) stock or to hold the current position. You must respond strictly in JSON format following the schema below. Your decisions must be based on the given inputs and adhere to the specified guidelines and day trading principles.
 
 ---
 
@@ -109,7 +109,6 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 ```json
 {{
   "action": "buy",  // Options: "buy", "hold", "sell".
-  "buy_type": "long", // Options: "long", "short". Use null, if "hold" action was chosen
   "amount": "1000", // Amount in EUR to buy/sell. Use null if "hold" actions was chosen.
   "look_back_in_seconds": 1000, 
   "reason_of_decision": "Detailed explanation of why this action was chosen based on the input data and analysis and maybe the amount of seconds which was chosen."
@@ -124,7 +123,6 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 ```json
 {{
   "action": "buy",
-  "buy_type": "long",
   "amount": "1000",
   "look_back_in_seconds": 600,
   "reason_of_decision": "The stock shows positive momentum based on recent technical indicators, increasing sentiment, and bullish market conditions."
@@ -135,7 +133,6 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 ```json
 {{
   "action": "hold",
-  "buy_type": null,
   "amount": null,
   "look_back_in_seconds": 1800,
   "reason_of_decision": "The market data and sentiment are inconclusive, and no strong signals to act are evident."
@@ -146,7 +143,6 @@ You are a **Day Trader Agent** tasked with deciding whether to take a **long** o
 ```json
 {{
   "action": "sell",
-  "buy_type": null,
   "amount": "500",
   "look_back_in_seconds": 1200,
   "reason_of_decision": "Technical indicators suggest a reversal, and risk mitigation is recommended based on declining market sentiment."
@@ -173,21 +169,19 @@ The Day Trader Agent must consider the following inputs for decision-making:
 
 ### **Decision Guidelines**:
 - The agent must analyze and integrate all inputs objectively while acknowledging potential inaccuracies in company-related news.
-- The **risk profile of the user** and their financial data must guide decisions on the **amount** and **type** of action (buy/sell).
 - Decisions must align with market and technical indicators, balancing a slight risk-taking approach with the goal of optimal results.
+- You may also choose "Hold" even if the user has no current position or is invested in the stock. This is appropriate if market conditions are unclear, trends are inconclusive, or waiting, if you are not comfortable to make a decision between `sell` or `buy`.
 - The **look_back_in_seconds** determines how frequently the agent reevaluates and adjusts its position:
-  - Minimum: **10 minutes** (600 seconds).
+  - Minimum: **2 minutes** (120 seconds).
   - Maximum: **1 day** (86,400 seconds).
-- You may choose "Hold" even if the user has no current position in the stock. This is appropriate if market conditions are unclear, trends are inconclusive, or waiting for better opportunities aligns with the user’s risk tolerance.
-- You should aim to **maximize winnings** or **minimize losses** based on the current market conditions:
-  - Avoid actions that expose the user to undue risk if market indicators are not favorable.
-  - Recognize that maximizing winnings often involves calculated risk-taking but should not lead to blind decision-making.
+- You should aim to **maximize winnings** or **minimize losses** based on the current market conditions.
 - When markets are **closed**, decisions should account for the next trading session. In such cases:
   - Set `look_back_in_seconds` to the time remaining until the next market opening.
   - Prepare a position based on pre-market indicators or known events likely to influence the stock's behavior at the open.
 - You must follow the Day Trading Principles outlined below to ensure optimal decision-making.
 - Use your own knolwedge and historical events as well as experience to make the best decision for the user.
 - Pay close attention to the opening time of the US market. 
+- Explain your reasoning in the `reason_of_decision` in simple terms for the user to understand, as he is new into trading.
 
 ---
 
@@ -246,7 +240,7 @@ Analyze the provided data on {company_name} ({ticker}) and today’s financial m
 	2.	Trading Strategy: Recommend actionable trading strategies (e.g., breakout levels, support/resistance zones, scalping opportunities).
 	3.	Risk Management: Provide clear guidelines for managing risk in today’s trading conditions.
 	4.	Market Context: Briefly mention relevant macroeconomic or sector-wide influences impacting {ticker}’s performance.
-	5.	Conclusion: Summarize the overall outlook for {company_name} ({ticker}) as a day trading candidate.
+	5.	Conclusion: Summarize the overall outlook for {company_name} ({ticker}) as a day trading candidate in a easy terms even for new traders.
 
 Ensure brevity, clarity, and prioritization of actionable insights. Avoid extraneous information or excessive detail.
 """
