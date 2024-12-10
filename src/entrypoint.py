@@ -9,7 +9,6 @@ import pytz
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
-day_trader = DayTraderAgent()
 MEZ = pytz.timezone('Europe/Berlin')
 
 def extract_json_from_string(string):
@@ -34,6 +33,8 @@ def perform_ticker_evaluation():
     tickers = ticker_db.keys()
     
     for ticker in tickers:
+        # for some reason we need to create the object in the loop. Weird error occurs even with retry exponential backoff; 
+        day_trader = DayTraderAgent()
         action, context = day_trader.generate_day_trading_action(ticker)
         summary = day_trader.generate_summary_of_evaluation(ticker, context)
         try:

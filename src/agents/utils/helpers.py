@@ -1,17 +1,19 @@
 import time
 import random
-from openai.error import OpenAIError
+import openai
 
 def retry_request(func, *args, max_retries=2, **kwargs):
-    base_sleep = 1
+    base_sleep = 1  # base sleep time in seconds
     for attempt in range(max_retries + 1):
         try:
             return func(*args, **kwargs)
-        except OpenAIError as e:
-            if e.status_code != 500 or attempt == max_retries:
+        except Exception as e:
+            # Handle non-OpenAI specific exceptions
+            print(f"An unexpected error occurred: {str(e)}")
+            if attempt == max_retries:
                 raise
-            sleep_time = base_sleep * 2 ** attempt  # exponential backoff
-            sleep_time += random.uniform(0, base_sleep)  # adding some jitter
+            sleep_time = base_sleep * 2 ** attempt
+            sleep_time += random.uniform(0, base_sleep)
+            print(f"Retrying request, attempt {attempt + 1}. Waiting {sleep_time} seconds. General Error: {str(e)}")
             time.sleep(sleep_time)
-            print(f"Retrying request, attempt {attempt + 1}")
     return None
