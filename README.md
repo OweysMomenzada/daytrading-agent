@@ -40,11 +40,8 @@ open schedular dashboard:
 ```
 heroku addons:open scheduler
 ```
+When creating a job, you need to add `python src/entrypoint` to the bash command input mask.
 
-Do a git push heroku!
-```
-git push heroku main
-```
 
 Set the env variables:
 ````
@@ -61,4 +58,14 @@ heroku config:set ADMIN_NAME="..."
 verify variables:
 ```
 heroku config
+```
+
+you should use the dockerfile!!! Configure a stack for the container
+```
+heroku stack:set container -a daytrader-agent
+```
+
+Do a git push heroku!
+```
+git push heroku main
 ```
