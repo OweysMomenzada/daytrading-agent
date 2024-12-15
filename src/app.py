@@ -13,11 +13,9 @@ load_dotenv()
 admin = os.getenv("ADMIN_NAME")
 password = os.getenv("ADMIN_PW")
 
-day_trader = DayTraderAgent()
 VALID_CREDENTIALS = {
     admin: password,
 }
-
 
 # Main app content
 st.title("Day Trading Agent")
@@ -46,6 +44,7 @@ selected_tickers = st.multiselect('Select tickers', tickers)
 message = st.text_area("Please provide your trading goal")
 if st.button('Submit'):
     for ticker in selected_tickers:
+        day_trader = DayTraderAgent()
         action, context = day_trader.generate_day_trading_action(ticker, user_message=message)
         try:
             proposal, formatted_action = extract_json_from_string(action)
