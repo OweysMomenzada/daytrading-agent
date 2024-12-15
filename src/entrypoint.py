@@ -35,7 +35,8 @@ def perform_ticker_evaluation():
     for ticker in tickers:
         # for some reason we need to create the object in the loop. Weird error occurs even with retry exponential backoff; 
         day_trader = DayTraderAgent()
-        action, context = day_trader.generate_day_trading_action(ticker)
+        user_desire = "My goal is to day trade"
+        action, context = day_trader.generate_day_trading_action(ticker, user_message=user_desire)
         summary = day_trader.generate_summary_of_evaluation(ticker, context)
         try:
             proposal, formatted_action = extract_json_from_string(action)
@@ -60,6 +61,9 @@ def is_time_to_trade():
         return True
     # else between 20:00 and 20:10
     if now.hour == 20 and 0 <= now.minute <= 10:
+        return True
+    ### TODO DELETE THIS only for testing!
+    else:
         return True
     return False
 

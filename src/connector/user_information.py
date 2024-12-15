@@ -42,7 +42,7 @@ def check_market_status():
 
     return is_us_market_open, is_market_open
 
-def get_user_data():
+def get_user_data(desire):
     """
     Get user data from the database.
 
@@ -61,10 +61,11 @@ def get_user_data():
 User Location: {user_data['user_location']}
 Available Budget: {user_data['available_budget']} {user_data['trading_currency']}
 Trading Market Location: {user_data['trading_market_location']}
-Risk Tolerance: {user_data['risk_tolerance_description']}
+User's Desire about trading: {desire}
 Current Time of the User (MEZ): {current_time_mez}
 US Market Status: {us_market_status}
 Overall Market Status (User can actively trade): {market_status}
+User's Desire about trading: {user_data['risk_tolerance_description']}
     """
     return output_text
 

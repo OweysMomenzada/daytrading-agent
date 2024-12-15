@@ -2,6 +2,11 @@
 Daytrading Agent
 
 
+### Start app
+```
+streamlit run app.py --server.port 8503
+```
+
 ### email creation
 create an email on gmail.
 Turn on two step authentification (must!).
